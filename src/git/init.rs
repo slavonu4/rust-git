@@ -1,6 +1,5 @@
+use crate::git::GIT_DIR;
 use std::fs;
-
-const GIT_DIR: &str = ".rgit";
 
 pub fn init_git_directory() {
     fs::create_dir(GIT_DIR).unwrap();

@@ -10,4 +10,10 @@ pub struct CliArguments {
 #[derive(Subcommand, Debug)]
 pub enum Command {
     Init,
+    CatFile {
+        #[arg(short = 'p')]
+        pretty_print: bool,
+
+        object_hash: String,
+    },
 }
