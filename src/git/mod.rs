@@ -3,6 +3,8 @@ pub mod init;
 
 pub const GIT_DIR: &str = ".rgit";
 pub const OBJECTS_DIR: &str = ".rgit/objects";
+pub const REFS_DIR: &str = ".rgit/refs";
+pub const HEAD: &str = ".rgit/HEAD";
 
 pub enum ObjectType {
     BLOB,

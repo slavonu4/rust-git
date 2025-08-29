@@ -8,7 +8,7 @@ use crate::{
 mod cli;
 mod git;
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let args = CliArguments::parse();
 
     match args.command {
