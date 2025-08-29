@@ -1,8 +1,7 @@
 use std::{
     ffi::CStr,
     fs::File,
-    io::{self, BufRead, BufReader, Read, Write},
-    usize,
+    io::{self, BufRead, BufReader, Read},
 };
 
 use anyhow::Context;
@@ -38,33 +37,23 @@ pub fn cat_file(object_hash: String, pretty_print: bool) -> anyhow::Result<()> {
     );
     let (kind, size) = header_parts.unwrap();
     let kind = match kind {
-        "blob" => ObjectType::BLOB,
-        _ => ObjectType::UNKNOWN,
+        "blob" => ObjectType::Blob,
+        _ => ObjectType::Unknown,
     };
     let size = size
-        .parse::<usize>()
+        .parse::<u64>()
         .with_context(|| format!("Unable to parse object`s size {}", size))?;
 
-    buffer.clear();
-    buffer.resize(size, 0);
-    reader
-        .read_exact(&mut buffer[..])
-        .context("Unable to read object`s content")?;
-    let remaining_bytes = reader.read(&mut [0]).unwrap();
     anyhow::ensure!(
-        remaining_bytes == 0,
-        "Object`s file contains more data than it should"
+        kind != ObjectType::Unknown,
+        "This object type is not supported"
     );
 
+    let mut reader = reader.take(size);
     let stdout = io::stdout();
     let mut stdout = stdout.lock();
 
-    match kind {
-        ObjectType::BLOB => stdout
-            .write_all(&buffer)
-            .context("Unable to write object to stdin")?,
-        _ => panic!("This object type is not supported"),
-    }
+    io::copy(&mut reader, &mut stdout).context("Unable to write object to stdout")?;
 
     Ok(())
 }
