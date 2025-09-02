@@ -15,6 +15,7 @@ pub fn hash_object(object_path: PathBuf, write: bool) -> anyhow::Result<()> {
     let file_metadata = file.metadata().context("Can not get file metadata")?;
     let file_size = file_metadata.len();
     let header = format!("blob {}\0", file_size);
+    // TODO: use temp file and a custom writer to avoid reading an entire file in memory
     let mut file_content = String::new();
     file.read_to_string(&mut file_content)
         .context("Can not read file`s content")?;
