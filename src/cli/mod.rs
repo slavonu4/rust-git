@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 
 #[derive(Parser, Debug)]
@@ -15,5 +17,11 @@ pub enum Command {
         pretty_print: bool,
 
         object_hash: String,
+    },
+    HashObject {
+        #[arg(short = 'w')]
+        write: bool,
+
+        object_path: PathBuf,
     },
 }
