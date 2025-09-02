@@ -8,9 +8,9 @@ use anyhow::Context;
 use flate2::{write::ZlibEncoder, Compression};
 use sha1::{Digest, Sha1};
 
-use crate::git::OBJECTS_DIR;
+use crate::commands::OBJECTS_DIR;
 
-pub fn hash_object(object_path: PathBuf, write: bool) -> anyhow::Result<()> {
+pub fn invoke(object_path: PathBuf, write: bool) -> anyhow::Result<()> {
     let mut file = fs::File::open(&object_path).context("Can not read the file")?;
     let file_metadata = file.metadata().context("Can not get file metadata")?;
     let file_size = file_metadata.len();

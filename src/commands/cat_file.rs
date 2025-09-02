@@ -7,9 +7,9 @@ use std::{
 use anyhow::Context;
 use flate2::read::ZlibDecoder;
 
-use crate::git::{ObjectType, OBJECTS_DIR};
+use crate::commands::{ObjectType, OBJECTS_DIR};
 
-pub fn cat_file(object_hash: String, pretty_print: bool) -> anyhow::Result<()> {
+pub fn invoke(object_hash: String, pretty_print: bool) -> anyhow::Result<()> {
     anyhow::ensure!(pretty_print, "Pretty print flag is required for now");
     let object_file_path = format!(
         "{}/{}/{}",
