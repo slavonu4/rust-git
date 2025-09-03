@@ -8,7 +8,7 @@ use anyhow::Context;
 use flate2::{write::ZlibEncoder, Compression};
 use sha1::{Digest, Sha1};
 
-use crate::commands::OBJECTS_DIR;
+use crate::OBJECTS_DIR;
 
 pub fn invoke(object_path: PathBuf, write: bool) -> anyhow::Result<()> {
     let mut file = fs::File::open(&object_path).context("Can not read the file")?;

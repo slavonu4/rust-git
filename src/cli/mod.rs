@@ -24,4 +24,10 @@ pub enum Command {
 
         object_path: PathBuf,
     },
+    LsTree {
+        #[arg(long = "name-only")]
+        name_only: bool,
+
+        tree_hash: String,
+    },
 }

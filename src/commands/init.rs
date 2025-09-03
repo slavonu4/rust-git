@@ -1,6 +1,6 @@
 use anyhow::Context;
 
-use crate::commands::{GIT_DIR, HEAD, OBJECTS_DIR, REFS_DIR};
+use crate::{GIT_DIR, HEAD, OBJECTS_DIR, REFS_DIR};
 use std::fs;
 
 pub fn invoke() -> anyhow::Result<()> {
