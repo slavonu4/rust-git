@@ -5,7 +5,7 @@ use crate::objects::ObjectType;
 
 pub fn invoke(object_hash: String, pretty_print: bool) -> anyhow::Result<()> {
     anyhow::ensure!(pretty_print, "Pretty print flag is required for now");
-    let object = crate::objects::read_object(object_hash).context("Unable to read the object")?;
+    let object = crate::objects::read_object(&object_hash).context("Unable to read the object")?;
     anyhow::ensure!(
         object.kind != ObjectType::Unknown,
         "This object type is not supported"

@@ -3,6 +3,7 @@ use anyhow::Context;
 use flate2::read::ZlibDecoder;
 use std::{
     ffi::CStr,
+    fmt::Display,
     fs::File,
     io::{BufRead, BufReader, Read},
 };
@@ -20,12 +21,23 @@ pub struct Object<R> {
     pub reader: R,
 }
 
-pub fn read_object(object_hash: String) -> anyhow::Result<Object<impl Read>> {
+impl Display for ObjectType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let result = match self {
+            Self::Blob => "blob",
+            Self::Tree => "tree",
+            _ => "unknown",
+        };
+        f.write_str(result)
+    }
+}
+
+pub fn read_object(object_hash: &str) -> anyhow::Result<Object<impl Read>> {
     let object_file_path = format!(
         "{}/{}/{}",
         OBJECTS_DIR,
-        &object_hash[2..],
-        &object_hash[..2]
+        &object_hash[..2],
+        &object_hash[2..]
     );
 
     let object_file = File::open(object_file_path).context("Unable to read object file")?;
