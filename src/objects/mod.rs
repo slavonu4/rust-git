@@ -1,11 +1,13 @@
 use crate::OBJECTS_DIR;
 use anyhow::Context;
-use flate2::read::ZlibDecoder;
+use flate2::{read::ZlibDecoder, write::ZlibEncoder, Compression};
+use sha1::{Digest, Sha1};
 use std::{
     ffi::CStr,
     fmt::Display,
-    fs::File,
-    io::{BufRead, BufReader, Read},
+    fs::{self, File},
+    io::{BufRead, BufReader, Read, Write},
+    path::PathBuf,
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -73,4 +75,31 @@ pub fn read_object(object_hash: &str) -> anyhow::Result<Object<impl Read>> {
         expected_size: size,
         reader,
     })
+}
+
+impl<R> Object<R>
+where
+    R: Read,
+{
+    pub fn write<W: Write>(self, writer: W) -> anyhow::Result<String> {
+        let header = format!("{} {}\0", self.kind, self.expected_size);
+
+        let mut reader = BufReader::new(self.reader);
+        let mut file_content = String::new();
+
+        reader
+            .read_to_string(&mut file_content)
+            .context("Can not read file`s content")?;
+        let object_content = format!("{}{}", header, file_content);
+
+        let mut hasher = Sha1::new();
+        hasher.update(&object_content);
+        let object_hash = hasher.finalize();
+        let object_hash = hex::encode(object_hash);
+
+        let mut encoder = ZlibEncoder::new(writer, Compression::default());
+        write!(encoder, "{}", object_content).context("Unable to compress object`s hash")?;
+        encoder.finish().context("Unable to write the object")?;
+        Ok(object_hash)
+    }
 }
