@@ -1,7 +1,4 @@
-use std::{
-    ffi::CString,
-    io::{self, BufRead, BufReader, Read, Write},
-};
+use std::io::{self, BufRead, BufReader, Read, Write};
 
 use anyhow::{ensure, Context};
 
