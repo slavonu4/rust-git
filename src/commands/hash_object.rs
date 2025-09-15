@@ -6,16 +6,10 @@ use std::{
 
 use anyhow::Context;
 
-use crate::{objects::Object, OBJECTS_DIR};
+use crate::{objects::blob_from_file, OBJECTS_DIR};
 
-pub fn invoke(object_path: PathBuf, write: bool) -> anyhow::Result<()> {
-    let file = fs::File::open(&object_path).context("Can not read the file")?;
-    let file_metadata = file.metadata().context("Can not get file metadata")?;
-    let object = Object {
-        kind: crate::objects::ObjectType::Blob,
-        expected_size: file_metadata.len(),
-        reader: file,
-    };
+pub fn invoke(file_path: PathBuf, write: bool) -> anyhow::Result<()> {
+    let object = blob_from_file(file_path).context("Unable to read the file")?;
 
     let mut temp_file = fs::File::create("temporary").context("Unable to create a tmp file")?;
     let object_hash = object

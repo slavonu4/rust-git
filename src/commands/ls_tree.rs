@@ -50,7 +50,6 @@ fn get_name(buf: &Vec<u8>) -> anyhow::Result<Vec<u8>> {
     get_mode_and_name(buf).map(|mn| mn.1)
 }
 
-// %(objectmode) %(objecttype) %(objectname)%x09%(path)
 fn get_full_output(mode_and_name: &Vec<u8>, hash: &[u8]) -> anyhow::Result<Vec<u8>> {
     let (mode, mut name) = get_mode_and_name(mode_and_name)?;
 

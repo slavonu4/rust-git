@@ -22,7 +22,7 @@ pub enum Command {
         #[arg(short = 'w')]
         write: bool,
 
-        object_path: PathBuf,
+        file_path: PathBuf,
     },
     LsTree {
         #[arg(long = "name-only")]
@@ -30,4 +30,5 @@ pub enum Command {
 
         tree_hash: String,
     },
+    WriteTree,
 }

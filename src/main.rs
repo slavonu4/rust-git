@@ -20,12 +20,11 @@ fn main() -> anyhow::Result<()> {
             pretty_print,
             object_hash,
         } => commands::cat_file::invoke(object_hash, pretty_print),
-        Command::HashObject { write, object_path } => {
-            commands::hash_object::invoke(object_path, write)
-        }
+        Command::HashObject { write, file_path } => commands::hash_object::invoke(file_path, write),
         Command::LsTree {
             name_only,
             tree_hash,
         } => commands::ls_tree::invoke(tree_hash, name_only),
+        Command::WriteTree => commands::write_tree::invoke(),
     }
 }

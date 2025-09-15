@@ -34,6 +34,16 @@ impl Display for ObjectType {
     }
 }
 
+pub fn blob_from_file(file_path: PathBuf) -> anyhow::Result<Object<impl Read>> {
+    let file = fs::File::open(&file_path).context("Can not read the file")?;
+    let file_metadata = file.metadata().context("Can not get file metadata")?;
+    Ok(Object {
+        kind: crate::objects::ObjectType::Blob,
+        expected_size: file_metadata.len(),
+        reader: file,
+    })
+}
+
 pub fn read_object(object_hash: &str) -> anyhow::Result<Object<impl Read>> {
     let object_file_path = format!(
         "{}/{}/{}",
