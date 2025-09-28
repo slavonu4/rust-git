@@ -14,6 +14,7 @@ use std::{
 pub enum ObjectType {
     Blob,
     Tree,
+    Commit,
     Unknown,
 }
 
@@ -28,6 +29,7 @@ impl Display for ObjectType {
         let result = match self {
             Self::Blob => "blob",
             Self::Tree => "tree",
+            Self::Commit => "commit",
             _ => "unknown",
         };
         f.write_str(result)
@@ -74,6 +76,7 @@ pub fn read_object(object_hash: &str) -> anyhow::Result<Object<impl Read>> {
     let kind = match kind {
         "blob" => ObjectType::Blob,
         "tree" => ObjectType::Tree,
+        "commit" => ObjectType::Commit,
         _ => ObjectType::Unknown,
     };
     let size = size

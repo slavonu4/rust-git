@@ -31,4 +31,13 @@ pub enum Command {
         tree_hash: String,
     },
     WriteTree,
+    CommitTree {
+        #[arg(short = 'm')]
+        message: String,
+
+        #[arg(short = 'p')]
+        parent_hash: Option<String>,
+
+        tree_hash: String,
+    },
 }

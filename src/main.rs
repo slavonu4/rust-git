@@ -26,5 +26,10 @@ fn main() -> anyhow::Result<()> {
             tree_hash,
         } => commands::ls_tree::invoke(tree_hash, name_only),
         Command::WriteTree => commands::write_tree::invoke(),
+        Command::CommitTree {
+            message,
+            parent_hash,
+            tree_hash,
+        } => commands::commit_tree::invoke(tree_hash, parent_hash, message),
     }
 }
