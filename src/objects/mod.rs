@@ -7,7 +7,7 @@ use std::{
     fmt::Display,
     fs::{self, File},
     io::{BufRead, BufReader, Read, Write},
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -34,8 +34,8 @@ impl Display for ObjectType {
     }
 }
 
-pub fn blob_from_file(file_path: PathBuf) -> anyhow::Result<Object<impl Read>> {
-    let file = fs::File::open(&file_path).context("Can not read the file")?;
+pub fn blob_from_file(file_path: &Path) -> anyhow::Result<Object<impl Read>> {
+    let file = fs::File::open(file_path).context("Can not read the file")?;
     let file_metadata = file.metadata().context("Can not get file metadata")?;
     Ok(Object {
         kind: crate::objects::ObjectType::Blob,
@@ -110,6 +110,27 @@ where
         let mut encoder = ZlibEncoder::new(writer, Compression::default());
         write!(encoder, "{}", object_content).context("Unable to compress object`s hash")?;
         encoder.finish().context("Unable to write the object")?;
+        Ok(object_hash)
+    }
+
+    pub fn write_to_objects_dir(self) -> anyhow::Result<String> {
+        let tmp = "temporary";
+        let temp_file = fs::File::create(tmp).context("Unable to create a tmp file")?;
+        let object_hash = self
+            .write(&temp_file)
+            .context("Unable to write to a tmp file")?;
+
+        let object_path = format!(
+            "{}/{}/{}",
+            OBJECTS_DIR,
+            &object_hash[..2],
+            &object_hash[2..]
+        );
+        let object_path = PathBuf::from(object_path);
+        fs::create_dir_all(object_path.parent().unwrap())
+            .context("Can not create a directory for the object")?;
+        fs::rename(tmp, object_path).context("Can not move object file from temp")?;
+
         Ok(object_hash)
     }
 }
