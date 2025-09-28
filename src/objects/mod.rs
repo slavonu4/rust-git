@@ -4,6 +4,7 @@ use chrono::Local;
 use flate2::{read::ZlibDecoder, write::ZlibEncoder, Compression};
 use sha1::{Digest, Sha1};
 use std::cmp::{self, Ordering};
+use std::env;
 use std::ffi::OsString;
 use std::fmt::Write as _;
 use std::fs::DirEntry;
@@ -277,17 +278,20 @@ pub fn commit_tree(
     let commit_time = now.timestamp();
     let timezone_offset = now.format("%z").to_string();
 
+    let name = env::var("NAME").context("Can not get author`s name from OS envs")?;
+    let email = env::var("EMAIL").context("Can not get author`s email from OS envs")?;
+
     writeln!(commit_content, "tree {tree_hash}")?;
     if let Some(parent_hash) = parent_hash {
         writeln!(commit_content, "parent {parent_hash}")?;
     }
     writeln!(
         commit_content,
-        "author Viacheslav Bobrenok <test@test.com> {commit_time} {timezone_offset}"
+        "author {name} <{email}> {commit_time} {timezone_offset}"
     )?;
     writeln!(
         commit_content,
-        "committer Viacheslav Bobrenok <test@test.com> {commit_time} {timezone_offset}"
+        "committer {name} <{email}> {commit_time} {timezone_offset}"
     )?;
     writeln!(commit_content)?;
     writeln!(commit_content, "{message}")?;
