@@ -40,4 +40,8 @@ pub enum Command {
 
         tree_hash: String,
     },
+    Commit {
+        #[arg(short = 'm')]
+        message: String,
+    },
 }

@@ -7,7 +7,7 @@ pub fn invoke(
     parent_hash: Option<String>,
     message: String,
 ) -> anyhow::Result<()> {
-    let hash = objects::commit_tree(tree_hash, parent_hash, message)
+    let hash = objects::write_commit(tree_hash, parent_hash, message)
         .context("Unable to commit the tree")?;
     println!("{hash}");
 

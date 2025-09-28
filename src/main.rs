@@ -31,5 +31,6 @@ fn main() -> anyhow::Result<()> {
             parent_hash,
             tree_hash,
         } => commands::commit_tree::invoke(tree_hash, parent_hash, message),
+        Command::Commit { message } => commands::commit::invoke(message),
     }
 }

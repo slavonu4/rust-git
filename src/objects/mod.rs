@@ -1,6 +1,7 @@
-use crate::{objects, OBJECTS_DIR};
+use crate::{objects, GIT_DIR, OBJECTS_DIR};
 use anyhow::Context;
 use chrono::Local;
+use core::hash;
 use flate2::{read::ZlibDecoder, write::ZlibEncoder, Compression};
 use sha1::{Digest, Sha1};
 use std::cmp::{self, Ordering};
@@ -268,7 +269,7 @@ fn compare_dir_entries(a: &DirEntryInfo, b: &DirEntryInfo) -> Ordering {
     c1.cmp(&c2)
 }
 
-pub fn commit_tree(
+pub fn write_commit(
     tree_hash: String,
     parent_hash: Option<String>,
     message: String,
@@ -306,4 +307,32 @@ pub fn commit_tree(
         .write_to_objects_dir()
         .context("Unable to write commit file")?;
     Ok(hash)
+}
+
+pub fn get_head_hash() -> anyhow::Result<String> {
+    let head_ref = get_head_ref()?;
+
+    let hash = fs::read_to_string(format!("{}/{}", crate::GIT_DIR, head_ref))
+        .with_context(|| format!("Unable to get HEAD hash from {head_ref}"))?;
+    let hash = hash.trim();
+
+    Ok(hash.to_string())
+}
+
+pub fn update_head_ref(hash: &str) -> anyhow::Result<()> {
+    let head_ref = get_head_ref()?;
+
+    fs::write(format!("{}/{}", GIT_DIR, head_ref), hash)
+        .with_context(|| format!("Unable to update HEAD ref {}", head_ref))
+}
+
+fn get_head_ref() -> anyhow::Result<String> {
+    let head_ref = fs::read_to_string(crate::HEAD).context("Unable to read HEAD")?;
+    let head_ref = head_ref.trim();
+
+    let Some(head_ref) = head_ref.strip_prefix("ref: ") else {
+        anyhow::bail!("Refusing to commit onto detached HEAD");
+    };
+
+    Ok(head_ref.to_string())
 }
